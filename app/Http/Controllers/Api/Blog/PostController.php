@@ -14,4 +14,9 @@ class PostController extends BaseController
 
         return $posts;
     }
+    public function details(string $id)
+    {
+        $posts = BlogPost::with(['user', 'category'])->find($id);
+        return $posts;
+    }
 }

@@ -2,31 +2,27 @@
 
 namespace App\Http\Controllers\Api\Blog;
 
-use App\Jobs\BlogPostAfterDeleteJob;
-use App\Models\BlogPost;
+use App\Models\BlogCategory;
 use App\Http\Controllers\Blog\BaseController;
+use function Pest\Laravel\get;
 
 
-class PostController extends BaseController
+class CategoryController extends BaseController
 {
     public function index()
     {
-        $posts = BlogPost::with(['user', 'category'])->get();
-        return $posts;
+        $paginator = BlogCategory::with(['parentCategory']) -> get();
+        return $paginator;
     }
     public function details(string $id)
     {
-        $posts = BlogPost::with(['user', 'category'])->find($id);
-        return $posts;
+        $categories = BlogCategory::with(['parentCategory'])->find($id);
+        return $categories;
     }
     public function delete(string $id)
     {
-        $result = BlogPost::destroy($id); //софт деліт, запис лишається
-
-        //$result = BlogPost::find($id)->forceDelete(); //повне видалення з БД
-
+        $result = BlogCategory::destroy($id);
         if ($result) {
-            BlogPostAfterDeleteJob::dispatch($id)->delay(20);
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно видалено'
